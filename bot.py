@@ -4,8 +4,9 @@ from PyPDF2 import PdfReader
 from random import randint, choice
 
 class AllahsMessenger:
-    Bot = commands.Bot(intents=nextcord.Intents.all(), command_prefix="?")
+    Bot = commands.Bot(intents=nextcord.Intents.all())
     Channel = None
+    Started = False
 
     class Settings:
         PageRange = (11, 339)
@@ -17,7 +18,7 @@ class AllahsMessenger:
         "what up with thee",
         "what's popping mujahideen",
         "what's fly my brothers in allah",
-        "what's brackin soul brothers"
+        "what's brackin soul brothers",
         "assalamu alaikum my slimes",
         "alhamdulillah my bluds"
     ]
@@ -25,10 +26,17 @@ class AllahsMessenger:
     @Bot.event
     async def on_ready():
         print("im running nigga")
-        AllahsMessenger.MessageLoop.start()
+        try:
+            AllahsMessenger.MessageLoop.start()
+        except Exception as e:
+            print(e)
 
     @tasks.loop(hours=Settings.Interval)
     async def MessageLoop():
+        if not AllahsMessenger.Started:
+            AllahsMessenger.Started = True
+            return
+        
         try:
             await AllahsMessenger.Bot.get_channel(AllahsMessenger.Channel).send(AllahsMessenger.GetMessage())
         except Exception as e:
@@ -56,7 +64,7 @@ class AllahsMessenger:
         if AllahsMessenger.GetFirstText(lines)[0].isalpha():
             lines = lines[:2]+lines[2:][AllahsMessenger.GetFirstVerse(lines[2:]):]
     
-        IsCutOff = lambda i: lines[i][-1]=="-" if i>2 and len(lines[i]) else False
+        IsCutOff = lambda i: lines[i][-1]=="-" if i>1 and len(lines[i]) else False
         return ''.join(
             [" "*(not IsCutOff(i-1)), "\n"][not len(lines[i]) or lines[i][0].isnumeric()]*bool(i)+lines[i][:(-1 if IsCutOff(i) else None)]
             for i in range(len(lines))
