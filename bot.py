@@ -10,7 +10,7 @@ class AllahsMessenger:
     class Settings:
         PageRange = (11, 339)
         MaxChars = 1000
-        Interval = 4
+        Interval = 2
 
     Messages = [
         "what's good my brethren",
