@@ -28,7 +28,7 @@ class AllahsMessenger:
         AllahsMessenger.MessageLoop.start()
 
     @tasks.loop(hours=Settings.Interval)
-    async def MessageLoop(ctx):
+    async def MessageLoop():
         try:
             await AllahsMessenger.Bot.get_channel(AllahsMessenger.Channel).send(AllahsMessenger.GetMessage())
         except Exception as e:
