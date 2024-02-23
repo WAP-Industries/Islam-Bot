@@ -12,7 +12,6 @@ class AllahsMessenger:
         MaxChars = 1000
         Interval = 2
 
-
     @Bot.event
     async def on_ready():
         print("im running nigga")
