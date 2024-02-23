@@ -1,6 +1,5 @@
 import nextcord
 from nextcord.ext import commands, tasks
-from PyPDF2 import PdfReader
 from random import randint, choice
 
 class AllahsMessenger:
@@ -13,15 +12,6 @@ class AllahsMessenger:
         MaxChars = 1000
         Interval = 2
 
-    Messages = [
-        "what's good my brethren",
-        "what up with thee",
-        "what's popping mujahideen",
-        "what's fly my brothers in allah",
-        "what's brackin soul brothers",
-        "assalamu alaikum my slimes",
-        "alhamdulillah my bluds"
-    ]
 
     @Bot.event
     async def on_ready():
@@ -44,9 +34,12 @@ class AllahsMessenger:
 
     @staticmethod
     def GetMessage() -> str:
+        with open("messages.json") as f:
+            message = choice(__import__("json").load(f)["Messages"])
+        
         contents = AllahsMessenger.GetScripture().split('\n')
         contents[0] = f"```{contents[0]}"
-        contents.insert(0, f"@everyone {choice(AllahsMessenger.Messages)}, this is YOUR daily dose of Islam\n")
+        contents.insert(0, f"@everyone {message}, this is YOUR daily dose of Islam\n")
         
         while sum(map(len, contents))>AllahsMessenger.Settings.MaxChars-3:
             contents.pop(len(contents)-1)
@@ -55,8 +48,11 @@ class AllahsMessenger:
 
     @staticmethod
     def GetScripture() -> str:
-        reader, page= PdfReader("quran.pdf"), randint(*AllahsMessenger.Settings.PageRange)
-        lines, next = map(AllahsMessenger.RemovePageNumber, [reader.pages[page].extract_text(), reader.pages[page+1].extract_text()])
+        reader, page= __import__("PyPDF2").PdfReader("quran.pdf"), randint(*AllahsMessenger.Settings.PageRange)
+        lines, next = map(
+            lambda x: [i.strip() for i in x.split("\n") if not i.strip().isnumeric()], 
+            [reader.pages[page].extract_text(), reader.pages[page+1].extract_text()]
+        )
         
         if AllahsMessenger.GetFirstText(next)[0].isalpha():
             lines = lines[:AllahsMessenger.GetFirstVerse(lines, True)]
@@ -69,10 +65,6 @@ class AllahsMessenger:
             [" "*(not IsCutOff(i-1)), "\n"][not len(lines[i]) or lines[i][0].isnumeric()]*bool(i)+lines[i][:(-1 if IsCutOff(i) else None)]
             for i in range(len(lines))
         )
-    
-    @staticmethod
-    def RemovePageNumber(contents: str) -> list:
-        return [i.strip() for i in contents.split("\n") if not i.strip().isnumeric()]
     
     @staticmethod
     def GetFirstText(lines: list) -> str:
