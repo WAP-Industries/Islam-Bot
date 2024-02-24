@@ -47,7 +47,7 @@ class AllahsMessenger:
 
     @staticmethod
     def GetScripture() -> str:
-        reader, page= __import__("PyPDF2").PdfReader("quran.pdf"), randint(*AllahsMessenger.Settings.PageRange)
+        reader, page = __import__("PyPDF2").PdfReader("quran.pdf"), randint(*AllahsMessenger.Settings.PageRange)
         lines, next = map(
             lambda x: [i.strip() for i in x.split("\n") if not i.strip().isnumeric()], 
             [reader.pages[page].extract_text(), reader.pages[page+1].extract_text()]
